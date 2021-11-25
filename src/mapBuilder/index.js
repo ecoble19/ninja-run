@@ -31,6 +31,7 @@ export function generate(size) {
     ,'  '.repeat(size)];
 }
 
+
 function coinPattern(num) {
     return '$ '.repeat(num);
 }

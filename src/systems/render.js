@@ -10,7 +10,7 @@ ECS.systems.render = function systemRender({entities, timeStamp, canvas, camera}
     for(let entityId in entities) {
         let curr = entities[entityId].components;
 
-        if(curr.appearance && curr.position) {
+        if(curr.appearance && curr.position && !curr.background) {
             let e = {...curr.appearance, ...curr.position, ...curr.animation};
             if(!camera.isVisible(e.x,e.size.width)) {
                 continue;
@@ -20,11 +20,6 @@ ECS.systems.render = function systemRender({entities, timeStamp, canvas, camera}
                 let currentFrame = Math.floor((timeStamp / interval) % e.frames);
                 canvas.drawImage(e.asset, e.size.width * currentFrame, 0,e.size.width, e.size.height,
                     e.x, e.y, e.size.width, e.size.height);
-            }
-            // Create continuous background effect
-            else if(curr.background) {
-                //canvas.drawImage(e.asset, e.x, e.y, e.size.width, e.size.height);
-                //canvas.drawImage(e.asset, e.x + e.size.width - 1, e.y, e.size.width, e.size.height);
             }
             else {
                 canvas.drawImage(e.asset, e.x, e.y, e.size.width + 1, e.size.height);

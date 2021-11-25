@@ -8,7 +8,7 @@ export function spawnPlayer(ecs) {
     entity.addComponent(new ecs.Components.Collision());
     entity.addComponent(new ecs.Components.Position(CAMERA_OFFSET,775));
     entity.addComponent(new ecs.Components.Player());
-    entity.addComponent(new ecs.Components.Velocity(20, 0));
+    entity.addComponent(new ecs.Components.Velocity(10, 0));
     ecs.entities[entity.id] = entity;
 }
 

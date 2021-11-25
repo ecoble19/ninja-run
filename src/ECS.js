@@ -17,7 +17,8 @@ const ECS = {
     $output: document.getElementById('output'),
     resources: ResourceManager,
     entities: {},
-    systems: {}
+    systems: {},
+    query: (component) => Object.entries(ECS.entities).filter(([key, v]) => Object.entries(v.components).find(([key, c]) => key === component)).map(x => x[1])
 };
 
 ECS.Components = {};

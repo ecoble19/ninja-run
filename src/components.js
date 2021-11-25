@@ -1,7 +1,8 @@
 import ECS from "./ECS";
 
-ECS.Components.Player = function ComponentPlayer(score) {
+ECS.Components.Player = function ComponentPlayer(score, money) {
     this.score = score || 0;
+    this.money = money || 0;
     return this;
 };
 ECS.Components.Player.prototype.name = 'player';

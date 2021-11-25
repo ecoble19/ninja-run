@@ -6,11 +6,12 @@ module.exports = {
     "mode": "none",
     "entry": {
         bundle: "./src/index.js",
-        //"bundle.min": "./src/index.js",
+        "bundle.min": "./src/index.js",
     },
     devtool: "source-map",
     "output": {
         "path": __dirname + '/dist',
+        filename: '[name].js'
     },
     module: {
         rules: [

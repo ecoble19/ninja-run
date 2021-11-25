@@ -6,7 +6,10 @@ import {spawnBackground, spawnCoin, spawnPlayer, spawnTile} from "./spawner";
 import './components';
 import './systems/render';
 import './systems/bgRender';
+import './systems/hudRender';
 import './systems/movement';
+import './systems/score';
+import './systems/collision';
 import Camera from "./camera";
 import {generate, TileType} from "./mapBuilder";
 
@@ -16,7 +19,9 @@ let camera = new Camera(40);
 
 const systems = [
     ECS.systems.movement,
-
+    ECS.systems.collision,
+    ECS.systems.score,
+    ECS.systems.hudRender,
     ECS.systems.render,
     ECS.systems.bgRender,
 
@@ -44,7 +49,7 @@ function gameLoop(timeStamp) {
     let secondsPassed = (timeStamp - oldTimeStamp) / 1000;
     oldTimeStamp = timeStamp;
 
-    let params = {entities: ECS.entities, timeStamp, canvas: ECS.context, bgCanvas: ECS.bgContext, camera}
+    let params = {entities: ECS.entities, query: ECS.query, timeStamp, canvas: ECS.context, bgCanvas: ECS.bgContext, hudCanvas: ECS.hudContext, camera}
     for (var i = 0, len = systems.length; i < len; i++) {
         // Call the system and pass in entities
         // NOTE: One optimal solution would be to only pass in entities
@@ -63,19 +68,19 @@ function gameLoop(timeStamp) {
 function startGame() {
     console.log('Starting');
     createWorld(generate(100));
-    ECS.bgContext = loadCanvas('background').getContext("2d");
-    ECS.context = loadCanvas('canvas').getContext("2d");
-
-    ECS.context.width = ECS.bgContext.width = 1920;
-    ECS.context.height = ECS.bgContext.height = 1080;
+    ECS.bgContext = loadCanvas('background');
+    ECS.context = loadCanvas('canvas');
+    ECS.hudContext = loadCanvas('hud', 1920, 80);
     gameLoop(0);
 }
 
-function loadCanvas(id) {
+function loadCanvas(id, width = 1920, height = 1080) {
     let c = document.getElementById(id);
-    c.width = 1920;
-    c.height = 1080;
-    return c;
+    const context = c.getContext("2d");
+    context.width = c.width = width;
+    context.height = c.height = height;
+
+    return context;
 }
 
 startGame();
