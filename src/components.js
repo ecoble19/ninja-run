@@ -3,19 +3,22 @@ import ECS from "./ECS";
 ECS.Components.Player = function ComponentPlayer(score, money) {
     this.score = score || 0;
     this.money = money || 0;
+    this.jumping = false;
     return this;
 };
 ECS.Components.Player.prototype.name = 'player';
 
-ECS.Components.Fall = function ComponentFall() {
+ECS.Components.Gravity = function ComponentGravity(grounded = true) {
+    this.grounded = grounded;
+    this.timeStamp = null;
     return this;
 };
-ECS.Components.Fall.prototype.name = 'fall';
+ECS.Components.Gravity.prototype.name = 'gravity';
 
-ECS.Components.Jump = function ComponentJump() {
+ECS.Components.Tile = function ComponentTile() {
     return this;
 };
-ECS.Components.Jump.prototype.name = 'jump';
+ECS.Components.Tile.prototype.name = 'tile';
 
 
 ECS.Components.Trap = function ComponentTrap() {
@@ -51,9 +54,19 @@ ECS.Components.Money = function ComponentMoney(value) {
 };
 ECS.Components.Money.prototype.name = 'money';
 
-ECS.Components.Animation = function ComponentAnimation(frames, animationsPerSecond) {
+ECS.Components.Animation = function ComponentAnimation(frames, animationsPerSecond, repeat = true) {
     this.frames = frames;
     this.animationsPerSecond = animationsPerSecond;
+    this.start = performance.now();
+    this.next = function() {
+        let interval = 1000 / this.animationsPerSecond;
+        let currentFrame = Math.floor((performance.now() - this.start) / interval);
+        if(!repeat && currentFrame >= (this.frames.length - 1)) {
+            console.log('NOT REPEATING')
+            return frames.length - 1;
+        }
+        return currentFrame % this.frames;
+    }
     return this;
 }
 

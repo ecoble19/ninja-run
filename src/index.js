@@ -1,6 +1,7 @@
 import {WINDOW} from "./config";
 import ECS from "./ECS";
-import {spawnBackground, spawnCoin, spawnPlayer, spawnTile} from "./spawner";
+import {AudioManager} from "./resources";
+import {spawnBackground, spawnCoin, spawnPlayer, spawnTile, spawnSpike} from "./spawner";
 
 // Add ECS plugins
 import './components';
@@ -10,68 +11,84 @@ import './systems/hudRender';
 import './systems/movement';
 import './systems/score';
 import './systems/collision';
+import './systems/gravity';
+import './systems/endGame';
+import './systems/player';
+import './systems/difficulty';
+import './systems/map';
 import Camera from "./camera";
+import userInput from "./userInput";
 import {generate, TileType} from "./mapBuilder";
 
 let oldTimeStamp = 0;
 let running = true;
 let camera = new Camera(40);
+let music = null;
+let handle = null;
 
 const systems = [
+    ECS.systems.map,
+    ECS.systems.player,
     ECS.systems.movement,
     ECS.systems.collision,
+    ECS.systems.gravity,
     ECS.systems.score,
+    ECS.systems.endGame,
     ECS.systems.hudRender,
     ECS.systems.render,
     ECS.systems.bgRender,
-
-
+    ECS.systems.difficulty
 ];
 
-function createWorld(map) {
-    spawnBackground(ECS);
-
-    for (let i = 0; i < map.length; i++) {
-        for (let j = 0; j < map[i].length; j++) {
-            if (map[i][j] === TileType.Land) {
-                spawnTile(ECS, {x: j * 120, y: WINDOW[1] - 120 * (i + 1)})
-            } else if (map[i][j] === TileType.Coin) {
-                spawnCoin(ECS, {x: j * 120, y: WINDOW[1] - 120 * (i + 1)})
-            }
-        }
-    }
-    spawnPlayer(ECS);
-
+const gameState = {
+    end: () => {
+        running = false;
+    },
+    pause: () => {
+        running = false;
+    },
+    unpause: () => {
+        running = true;
+    },
+    difficulty: 20,
+    mute: true,
 }
 
 
 function gameLoop(timeStamp) {
-    let secondsPassed = (timeStamp - oldTimeStamp) / 1000;
-    oldTimeStamp = timeStamp;
-
-    let params = {entities: ECS.entities, query: ECS.query, timeStamp, canvas: ECS.context, bgCanvas: ECS.bgContext, hudCanvas: ECS.hudContext, camera}
+    timeStamp -= oldTimeStamp;
+    let params = {entities: ECS.entities, query: ECS.query, timeStamp, canvas: ECS.context, bgCanvas: ECS.bgContext, hudCanvas: ECS.hudContext, camera, gameState, userInput, resources: ECS.resources}
     for (var i = 0, len = systems.length; i < len; i++) {
         // Call the system and pass in entities
-        // NOTE: One optimal solution would be to only pass in entities
-        // that have the relevant components for the system, instead of
-        // forcing the system to iterate over all entities
         systems[i](params);
     }
 
     // Run through the systems.
     // continue the loop
     if (running !== false) {
-        requestAnimationFrame(gameLoop);
+        handle = requestAnimationFrame(gameLoop);
     }
 }
 
 function startGame() {
-    console.log('Starting');
-    createWorld(generate(100));
+    reset();
+    spawnBackground(ECS);
+    spawnPlayer(ECS);
     ECS.bgContext = loadCanvas('background');
     ECS.context = loadCanvas('canvas');
     ECS.hudContext = loadCanvas('hud', 1920, 80);
+    music = AudioManager.getAsset('main');
+    music.loop = true;
+    music.play().catch(console.error);
     gameLoop(0);
+}
+
+function reset() {
+    gameState.end();
+    cancelAnimationFrame(handle);
+    ECS.entities = {};
+    gameState.difficulty = 0;
+    running = true;
 }
 
 function loadCanvas(id, width = 1920, height = 1080) {
@@ -83,4 +100,6 @@ function loadCanvas(id, width = 1920, height = 1080) {
     return context;
 }
 
-startGame();
+window.startGame = startGame;
+
+//startGame();

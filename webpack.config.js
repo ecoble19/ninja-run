@@ -6,7 +6,7 @@ module.exports = {
     "mode": "none",
     "entry": {
         bundle: "./src/index.js",
-        "bundle.min": "./src/index.js",
+        //"bundle.min": "./src/index.js",
     },
     devtool: "source-map",
     "output": {
@@ -24,7 +24,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebPackPlugin({
-            title: 'Product Wars',
+            title: 'Money Run',
             template: "src/index.html",
             filename: "index.html"
         })

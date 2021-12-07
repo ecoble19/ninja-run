@@ -3,7 +3,7 @@ import {SHOW_HITBOXES, SHOW_GRID, WINDOW} from "../config";
 
 ECS.systems.bgRender = function systemRender({entities, timeStamp, bgCanvas, camera}) {
     // clear the canvas
-    const vLeft = (camera.leftX / 4) % WINDOW[0];
+    const vLeft = (camera.leftX / 12) % WINDOW[0];
     const canvas = bgCanvas;
     canvas.setTransform(1,0,0,1,-vLeft,0);
     canvas.clearRect(vLeft, 0, canvas.width + vLeft, canvas.height);

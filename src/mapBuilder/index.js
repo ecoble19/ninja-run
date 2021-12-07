@@ -1,9 +1,4 @@
 
-const COIN = '$';
-const TILE = '_';
-const GAP = ' ';
-const SPIKE = '^';
-
 export const TileType = {
     Coin: '$',
     Land: '_',
@@ -11,27 +6,34 @@ export const TileType = {
     Spike: '^'
 }
 
-const Rows = {
-    0: [TILE, GAP, SPIKE],
-    1: [COIN, GAP],
-    2: [COIN, GAP, TILE],
-    3: [COIN, GAP, TILE, SPIKE],
-    4: [],
-    5: [],
-    6: [],
-    7: [],
-    8: [],
+export function generate(size, difficulty = 0) {
 
+    let chunk = ['_'.repeat(size).split('')
+    ,' '.repeat(size).split(''),'-'.repeat(size).split(''),' '.repeat(size).split(''),' '.repeat(size).split('')];
+    generateCoins(chunk);
+    generateSpikes(chunk, difficulty);
+    return chunk;
 }
 
-export function generate(size) {
-
-    return ['_'.repeat(size).split(''),
-        (' '.repeat(6) + coinPattern((size / 2) - 6)).split('')
-    ,'  '.repeat(size)];
+function generateCoins(chunk, difficulty) {
+    let chance = 4;
+    for(let i = 0; i < chunk.length; i++) {
+        for (let j = 0; j < chunk[i].length; j++) {
+            if (chunk[i][j] === ' ' && Math.floor(Math.random() * 100) < chance) {
+                chunk[i][j] = '$';
+            }
+        }
+    }
 }
 
-
-function coinPattern(num) {
-    return '$ '.repeat(num);
+function generateSpikes(chunk, difficulty) {
+    for(let i = 0; i < chunk[1].length; i++) {
+        if (chunk[1][i] === ' ' && Math.floor(Math.random() * 100) < Math.min(difficulty, 30)) {
+            chunk[1][i] = '^';
+            if(chunk[1].length > i + 1 && Math.floor(Math.random() * 100) < Math.min(difficulty, 50)) {
+                chunk[1][i + 1] = '^';
+            }
+            i += 5;
+        }
+    }
 }

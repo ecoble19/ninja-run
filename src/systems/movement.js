@@ -1,6 +1,6 @@
 import ECS from '../ECS';
 
-ECS.systems.movement = function systemRender({entities, timeStamp, canvas, camera}) {
+ECS.systems.movement = function systemMovement({entities, timeStamp, canvas, camera}) {
     for(let entityId in entities) {
         let curr = entities[entityId].components;
         if(curr.velocity && curr.position) {
