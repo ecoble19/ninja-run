@@ -3,7 +3,7 @@ import {ImageManager, AudioManager} from "./resources";
 function loanImages(cb) {
     ImageManager.queueDownload('bg','../assets/hills/layer-1.png');
     ImageManager.queueDownload('tile','../assets/hills/tile2.png');
-    ImageManager.queueDownload('ninjaRun','../assets/ninja/run2.png');
+    ImageManager.queueDownload('ninjaRun','../assets/ninja/run.png');
     ImageManager.queueDownload('ninjaJump','../assets/ninja/jump.png');
     ImageManager.queueDownload('ninjaDie','../assets/ninja/die.png');
     ImageManager.queueDownload('spike','../assets/obstacles/spike C.png');
