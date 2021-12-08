@@ -1,11 +1,11 @@
 import ECS from '../ECS';
 
 
-ECS.systems.collision = function systemCollision({entities, query, resources}) {
+ECS.systems.collision = function systemCollision({entities, query, resources, gameState}) {
 
-    const {id, components} = query("player")[0];
+    const p = query("player")[0];
+    const {id, components} = p;
     const player = components;
-    player.gravity.grounded = false;
 
     for(let entityId in entities) {
         if(entities[entityId] === player) {
@@ -25,19 +25,22 @@ ECS.systems.collision = function systemCollision({entities, query, resources}) {
                 player.gravity.grounded = true;
                 player.gravity.timeStamp = null;
             }
+            else if(curr.trap) {
+                player.player.dying = true;
+            }
 
-            if(!curr.money && player.position.y < curr.position.y) {
+            if(curr.tile && player.position.y < curr.position.y) {
                 player.velocity.vy = 0;
                 player.position.y = curr.position.y - player.appearance.size.height + 15;
             }
-            if(!curr.money && player.position.x > curr.position.x) {
+            if(curr.tile && player.position.x > curr.position.x) {
                 player.position.x = curr.position.x + player.appearance.size.width + 15;
             }
-            if(!curr.money && player.position.y > curr.position.y) {
+            if(curr.tile && player.position.y > curr.position.y) {
                 player.velocity.vy = 0;
                 player.position.y = curr.position.y + curr.appearance.size.height;
             }
-            if(!curr.money && player.position.x > curr.position.x) {
+            if(curr.tile && player.position.x > curr.position.x) {
                 player.position.x = curr.position.x + player.appearance.size.width + 15;
             }
         }

@@ -30,10 +30,10 @@ module.exports = {
         })
     ],
     optimization: {
-        minimize: true,
-        minimizer: [new TerserPlugin({
-            include: /\.min\.js$/
-        })]
+        // minimize: true,
+        // minimizer: [new TerserPlugin({
+        //     include: /\.min\.js$/
+        // })]
     },
     devServer: {
         contentBase: path.join(__dirname, 'dist')

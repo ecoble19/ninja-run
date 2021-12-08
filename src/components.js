@@ -4,9 +4,20 @@ ECS.Components.Player = function ComponentPlayer(score, money) {
     this.score = score || 0;
     this.money = money || 0;
     this.jumping = false;
+    this.dying = false;
     return this;
 };
 ECS.Components.Player.prototype.name = 'player';
+
+ECS.Components.Jump = function ComponentJump() {
+    return this;
+};
+ECS.Components.Jump.prototype.name = 'jump';
+
+ECS.Components.Die = function ComponentDie() {
+    return this;
+};
+ECS.Components.Die.prototype.name = 'die';
 
 ECS.Components.Gravity = function ComponentGravity(grounded = true) {
     this.grounded = grounded;
@@ -61,9 +72,8 @@ ECS.Components.Animation = function ComponentAnimation(frames, animationsPerSeco
     this.next = function() {
         let interval = 1000 / this.animationsPerSecond;
         let currentFrame = Math.floor((performance.now() - this.start) / interval);
-        if(!repeat && currentFrame >= (this.frames.length - 1)) {
-            console.log('NOT REPEATING')
-            return frames.length - 1;
+        if(!repeat && currentFrame >= this.frames) {
+            return this.frames;
         }
         return currentFrame % this.frames;
     }
@@ -77,7 +87,14 @@ ECS.Components.Appearance = function ComponentAppearance(asset, size) {
     this.size = size;
     return this;
 };
+
 ECS.Components.Appearance.prototype.name = 'appearance';
+
+ECS.Components.Hitbox = function ComponentHitbox(size) {
+    this.area = size;
+    return this;
+};
+ECS.Components.Hitbox.prototype.name = 'hitbox';
 
 ECS.Components.Background = function ComponentBackground() {
     return this;

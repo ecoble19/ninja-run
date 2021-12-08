@@ -10,7 +10,7 @@ ECS.systems.render = function systemRender({entities, timeStamp, canvas, camera}
     for(let entityId in entities) {
         let curr = entities[entityId].components;
 
-        if(curr.appearance && curr.position && !curr.background) {
+        if(curr.appearance && curr.position && !curr.background && !curr.player) {
             let e = {...curr.appearance, ...curr.position, ...curr.animation};
             if(!camera.isVisible(e.x,e.size.width)) {
                 if(camera.leftX > e.x) {
@@ -19,8 +19,6 @@ ECS.systems.render = function systemRender({entities, timeStamp, canvas, camera}
                 continue;
             }
             if(curr.animation) {
-                let interval = 1000 / e.animationsPerSecond;
-                //let currentFrame = Math.floor((timeStamp / interval) % e.frames);
                 let currentFrame = curr.animation.next();
                 canvas.drawImage(e.asset, e.size.width * currentFrame, 0,e.size.width, e.size.height,
                     e.x, e.y, e.size.width, e.size.height);
@@ -32,10 +30,14 @@ ECS.systems.render = function systemRender({entities, timeStamp, canvas, camera}
                 canvas.beginPath();
                 canvas.lineWidth = "1";
                 canvas.strokeStyle = "red";
-                canvas.rect(e.x, e.y,e.size.width, e.size.height);
+                //canvas.rect(e.x, e.y,e.size.width, e.size.height);
+                canvas.rect(...calcHitRect(curr.position, curr.appearance.size, curr.hitbox.area));
                 canvas.stroke();
             }
         }
     }
+}
 
+function calcHitRect(position, size, hitbox) {
+    return [position.x + (size.width - hitbox.width) / 2, position.y + (size.height - hitbox.height) / 2, hitbox.width, hitbox.height];
 }

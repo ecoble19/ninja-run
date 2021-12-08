@@ -9,11 +9,12 @@ ECS.systems.difficulty = function systemDifficulty({entities, query, gameState, 
     }
 
     let difficulty = startingDifficulty + Math.floor(timeStamp / 5000);
-    if(difficulty !== gameState.difficulty) {
+    if(!player.components.player.dying && difficulty !== gameState.difficulty) {
         gameState.difficulty = difficulty;
         player.components.velocity.vx = Math.min(20, difficulty) + 10;
     }
-    if(!player.jumping) {
+
+    if(!player.components.player.jumping && !player.components.player.dying) {
         player.components.animation.animationsPerSecond = Math.min(10, difficulty) + 10;
     }
 }

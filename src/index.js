@@ -16,6 +16,7 @@ import './systems/endGame';
 import './systems/player';
 import './systems/difficulty';
 import './systems/map';
+import './systems/playerRender';
 import Camera from "./camera";
 import userInput from "./userInput";
 import {generate, TileType} from "./mapBuilder";
@@ -35,14 +36,21 @@ const systems = [
     ECS.systems.score,
     ECS.systems.endGame,
     ECS.systems.hudRender,
+    ECS.systems.playerRender,
     ECS.systems.render,
     ECS.systems.bgRender,
-    ECS.systems.difficulty
+    ECS.systems.difficulty,
 ];
 
+
+
 const gameState = {
-    end: () => {
+    end: function() {
         running = false;
+        this.mute = true;
+        if(music) {
+            music.muted = true;
+        }
     },
     pause: () => {
         running = false;
@@ -50,14 +58,17 @@ const gameState = {
     unpause: () => {
         running = true;
     },
-    difficulty: 20,
-    mute: true,
+    difficulty: 0,
+    currentChunk: 0,
+    mute: false,
+    
+    
 }
 
 
 function gameLoop(timeStamp) {
     timeStamp -= oldTimeStamp;
-    let params = {entities: ECS.entities, query: ECS.query, timeStamp, canvas: ECS.context, bgCanvas: ECS.bgContext, hudCanvas: ECS.hudContext, camera, gameState, userInput, resources: ECS.resources}
+    let params = {entities: ECS.entities, query: ECS.query, timeStamp, canvas: ECS.context, bgCanvas: ECS.bgContext, playerCanvas: ECS.playerContext, hudCanvas: ECS.hudContext, camera, gameState, userInput, resources: ECS.resources}
     for (var i = 0, len = systems.length; i < len; i++) {
         // Call the system and pass in entities
         systems[i](params);
@@ -76,8 +87,9 @@ function startGame() {
     spawnPlayer(ECS);
     ECS.bgContext = loadCanvas('background');
     ECS.context = loadCanvas('canvas');
+    ECS.playerContext = loadCanvas('playerCanvas');
     ECS.hudContext = loadCanvas('hud', 1920, 80);
-    music = AudioManager.getAsset('main');
+    music = AudioManager.getAsset('main').cloneNode();
     music.loop = true;
     music.play().catch(console.error);
     gameLoop(0);
@@ -88,7 +100,9 @@ function reset() {
     cancelAnimationFrame(handle);
     ECS.entities = {};
     gameState.difficulty = 0;
+    gameState.currentChunk = 0;
     running = true;
+    oldTimeStamp = performance.now();
 }
 
 function loadCanvas(id, width = 1920, height = 1080) {
